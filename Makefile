@@ -1,6 +1,6 @@
 CC = gcc -g
 
-all: present.a present.o test_present.exe
+all: present.a present.o test_present
 
 present.a: present.o
 	ar rcs $@ $^
@@ -8,7 +8,7 @@ present.a: present.o
 present.o: present.c  present.h
 	$(CC) -c -o $@ $< -lm
 
-test_present.exe: test_present.o present.h present.a
+test_present: test_present.o present.h present.a
 	$(CC) $^ -o $@ -lm
 
 test_present.o: test_present.c present.h
@@ -17,8 +17,5 @@ test_present.o: test_present.c present.h
 clean:
 	rm -f *.o *.a core
 
-run: all
-	./test_present.exe
-
-demo: all
-	./present_demo.exe
+test: present.a present.o test_present
+	./test_present

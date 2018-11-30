@@ -9,7 +9,8 @@
 #include "present.h"
 
 const char s_box[] = "C56B90AD3EF84712";
-char * hex_binary[16] = {
+const char inv_s_box[] = "5EF8C12DB463079A";
+char hex_binary[16][4] = {
     "0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111",
     "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"
 };
@@ -21,7 +22,8 @@ void add_round_key(unsigned char *state, unsigned char *key) {
 }
 
 // Substitute each 4-bit word in the given state according to s_box
-void s_box_layer(unsigned char *state) {
+// Uses the inverse s_box if inverse is specified
+void s_box_layer(unsigned char *state, bool inverse) {
     char hex[3], tmp;
     long unsigned int s;
 
@@ -32,11 +34,11 @@ void s_box_layer(unsigned char *state) {
         // Take the hex numbers and put them through the s_box
         tmp = hex[0];
         s = strtoul(&tmp, NULL, 16);
-        hex[0] = s_box[s];
+        hex[0] = inverse ? inv_s_box[s] : s_box[s];
 
         tmp = hex[1];
         s = strtoul(&tmp, NULL, 16);
-        hex[1] = s_box[s];
+        hex[1] = inverse ? inv_s_box[s] : s_box[s];
 
         // Convert the new hex number back to char and update state
         state[i] = (unsigned char)(strtoul(hex, NULL, 16));
@@ -45,14 +47,17 @@ void s_box_layer(unsigned char *state) {
 
 // Permute the current state such that the bit at position i goes to position
 // P(i) given the rule:
-//      P(i) = i * 16 mod 63, if 0 <= i < 63
+//      P(i) = i * x mod 63, if 0 <= i < 63
 //           = 63,            if i == 63
-void p_layer(unsigned char *state) {
+// Where x = 16 for the regular permutation and x=4 for the inverse permutation
+void p_layer(unsigned char *state, bool inverse) {
     char prev[65], new[65];
     int p_i;
+    int x = inverse ? 4 : 16;
+
     str_to_bin(state, prev, 8);
     for (int i = 0; i < 63; ++i) {
-        p_i = (i * 16) % 63;
+        p_i = (i * x) % 63;
         new[p_i] = prev[i];
     }
     new[63] = prev[63];
@@ -89,17 +94,45 @@ void generate_round_key(unsigned char * key, int counter) {
 }
 
 // Encrypt a 64-bit block using an 80-bit key for 31 rounds by adding the key,
-// substituting the state, then permuting the state. 
+// substituting the state, then permuting the state.
 void encryption(unsigned char * state, unsigned char * key) {
-    for (int i = 0; i < 31; ++i) {
-        generate_round_key(key, i);
-        add_round_key(state, key);
-        s_box_layer(state);
-        p_layer(state);
+    unsigned char round_key[32][64], key_register[80];
+
+    // Generate the round keys and store them in the key register
+    memcpy(key_register, key, 80);
+    for (int i = 0; i < 32; ++i) {
+        generate_round_key(key_register, i);
+        memcpy(round_key[i], key_register, 64);
     }
 
-    generate_round_key(key, 31);
-    add_round_key(state, key);
+    // Encrypt the state
+    for (int i = 0; i < 31; ++i) {
+        add_round_key(state, round_key[i]);
+        s_box_layer(state, false);
+        p_layer(state, false);
+    }
+    add_round_key(state, round_key[31]);
+}
+
+// Decrypt a 64-bit block using an 80-bit key for 31 rounds by adding the key,
+// permuting the state, then substituting the state.
+void decryption(unsigned char * state, unsigned char * key) {
+    unsigned char round_key[32][64], key_register[80];
+
+    // Generate the round keys and store them in the key register
+    memcpy(key_register, key, 80);
+    for (int i = 0; i < 32; ++i) {
+        generate_round_key(key_register, i);
+        memcpy(round_key[i], key_register, 64);
+    }
+
+    // Decrypt the state
+    for (int i = 31; i > 0; --i) {
+        add_round_key(state, round_key[i]);
+        p_layer(state, true);
+        s_box_layer(state, true);
+    }
+    add_round_key(state, round_key[0]);
 }
 
 

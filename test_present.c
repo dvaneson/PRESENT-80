@@ -30,10 +30,11 @@ void test_add_round_key(unsigned char *state, unsigned char *key, unsigned char 
     print_hex(state);
 }
 
-void test_s_box_layer(unsigned char *state, unsigned char *target) {
+void test_s_box_layer(unsigned char *state, unsigned char *target, bool inverse) {
+    printf("\n\t[%s]", inverse ? "Inverse" : "Regular");
     printf("\n\t%-9s| ", "State");
     print_hex(state);
-    s_box_layer(state);
+    s_box_layer(state, inverse);
 
     printf("\n\t%-9s| ", "Expected");
     print_hex(target);
@@ -41,10 +42,11 @@ void test_s_box_layer(unsigned char *state, unsigned char *target) {
     print_hex(state);
 }
 
-void test_p_layer(unsigned char *state, unsigned char *target) {
+void test_p_layer(unsigned char *state, unsigned char *target, bool inverse) {
+    printf("\n\t[%s]", inverse ? "Inverse" : "Regular");
     printf("\n\t%-9s| ", "State");
     print_hex(state);
-    p_layer(state);
+    p_layer(state, inverse);
 
     printf("\n\t%-9s| ", "Expected");
     print_hex(target);
@@ -53,7 +55,7 @@ void test_p_layer(unsigned char *state, unsigned char *target) {
 }
 
 void test_generate_round_key(unsigned char *key, unsigned char *target, int counter) {
-    printf("\n\tRound %d", counter);
+    printf("\n\t[Round %d]", counter);
     printf("\n\t%-9s| ", "Key");
     print_10_hex(key);
     generate_round_key(key, counter);
@@ -64,16 +66,20 @@ void test_generate_round_key(unsigned char *key, unsigned char *target, int coun
     print_10_hex(key);
 }
 
-void test_encryption(unsigned char *state, unsigned char *key, unsigned char *target) {
+void test_cipher(unsigned char *state, unsigned char *key, unsigned char *target) {
     printf("\n\t%-9s| ", "State");
     print_hex(state);
     printf("\n\t%-9s| ", "Key");
     print_10_hex(key);
-    encryption(state, key);
-
     printf("\n\t%-9s| ", "Expected");
     print_hex(target);
-    printf("\n\t%-9s| ", "Actual");
+
+    encryption(state, key);
+    printf("\n\t%-9s| ", "Encrypt");
+    print_hex(target);
+
+    decryption(state, key);
+    printf("\n\t%-9s| ", "Decrypt");
     print_hex(state);
 }
 
@@ -105,28 +111,53 @@ int main(int argc, char * argv[])
     printf("\n\n----------------Testing s_box_layer------------------\n");
     memcpy(state, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
     memcpy(target, "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC", 8);
-    test_s_box_layer(state, target);
+    test_s_box_layer(state, target, false);
 
     printf("\n");
     memcpy(state, "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8);
     memcpy(target, "\xC5\x6B\x90\xAD\x3E\xF8\x47\x12", 8);
-    test_s_box_layer(state, target);
+    test_s_box_layer(state, target, false);
 
     printf("\n");
     memcpy(state, "\xDA\x6A\xF3\xBD\xF5\xB1\x33\x72", 8);
     memcpy(target, "\x7F\xAF\x2B\x87\x20\x85\xBB\xD6", 8);
-    test_s_box_layer(state, target);
+    test_s_box_layer(state, target, false);
+
+    printf("\n");
+    memcpy(state, "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC", 8);
+    memcpy(target, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
+    test_s_box_layer(state, target, true);
+
+    printf("\n");
+    memcpy(state, "\xC5\x6B\x90\xAD\x3E\xF8\x47\x12", 8);
+    memcpy(target, "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8);
+    test_s_box_layer(state, target, true);
+
+    printf("\n");
+    memcpy(state, "\x7F\xAF\x2B\x87\x20\x85\xBB\xD6", 8);
+    memcpy(target, "\xDA\x6A\xF3\xBD\xF5\xB1\x33\x72", 8);
+    test_s_box_layer(state, target, true);
 
 
     printf("\n\n----------------Testing p_layer----------------\n");
     memcpy(state, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
     memcpy(target, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
-    test_p_layer(state, target);
+    test_p_layer(state, target, false);
 
     printf("\n");
     memcpy(state, "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8);
     memcpy(target, "\x00\xFF\x0F\x0F\x33\x33\x55\x55", 8);
-    test_p_layer(state, target);
+    test_p_layer(state, target, false);
+
+    printf("\n");
+    memcpy(state, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
+    memcpy(target, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
+    test_p_layer(state, target, true);
+
+    printf("\n");
+    memcpy(state, "\x00\xFF\x0F\x0F\x33\x33\x55\x55", 8);
+    memcpy(target, "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8);
+    test_p_layer(state, target, true);
 
     printf("\n\n----------------Testing generate_round_keys----------------\n");
     unsigned char rKey[10], rTarget[10];
@@ -144,30 +175,29 @@ int main(int argc, char * argv[])
     memcpy(rTarget, "\x10\x24\x60\x24\x68\xAC\xF1\x35\xF9\xBD", 10);
     test_generate_round_key(rKey, rTarget, 1);
 
-    printf("\n\n----------------Testing encryption----------------\n");
+    printf("\n\n----------------Testing cipher----------------\n");
     memcpy(state, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
     memcpy(rKey, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 10);
     memcpy(target, "\x55\x79\xC1\x38\x7B\x22\x84\x45", 8);
-    test_encryption(state, rKey, target);
+    test_cipher(state, rKey, target);
 
     printf("\n");
     memcpy(state, "\x00\x00\x00\x00\x00\x00\x00\x00", 8);
     memcpy(rKey, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10);
     memcpy(target, "\xE7\x2C\x46\xC0\xF5\x94\x50\x49", 8);
-    test_encryption(state, rKey, target);
+    test_cipher(state, rKey, target);
 
     printf("\n");
     memcpy(state, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 8);
     memcpy(rKey, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 10);
     memcpy(target, "\xA1\x12\xFF\xC7\x2F\x68\x41\x7B", 8);
-    test_encryption(state, rKey, target);
+    test_cipher(state, rKey, target);
 
     printf("\n");
     memcpy(state, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 8);
     memcpy(rKey, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10);
     memcpy(target, "\x33\x33\xDC\xD3\x21\x32\x10\xD2", 8);
-    test_encryption(state, rKey, target);
-
+    test_cipher(state, rKey, target);
 
     // printf("\n\n----------------Testing str_to_bin---------------------\n\n");
     // unsigned char test[] = "ABC";
