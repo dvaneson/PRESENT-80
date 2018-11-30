@@ -1,8 +1,8 @@
 /*
     Donovan Ellison
-    11-28-2018
+    11-29-2018
 
-    test_present.c - Code to test functions for ECC
+    cipher.c - Code to encrypt and decrypt a string
 */
 
 #include "present.h"
