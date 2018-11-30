@@ -1,6 +1,6 @@
 CC = gcc -g
 
-all: present.a present.o test_present.exe present_demo.exe
+all: present.a present.o test_present.exe
 
 present.a: present.o
 	ar rcs $@ $^
