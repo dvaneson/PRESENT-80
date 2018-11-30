@@ -40,6 +40,9 @@ void bin_to_str(unsigned char *, char *, int);
 // Convert a hexedecimal number to binary
 char* hex_to_bin(char);
 
+// Convert a hexedecimal string to the corresponding char array
+void hex_to_ascii(char *, unsigned char *);
+
 // Reverse a char array of a given length
 void reverse(char *, int);
 

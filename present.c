@@ -96,13 +96,13 @@ void generate_round_key(unsigned char * key, int counter) {
 // Encrypt a 64-bit block using an 80-bit key for 31 rounds by adding the key,
 // substituting the state, then permuting the state.
 void encryption(unsigned char * state, unsigned char * key) {
-    unsigned char round_key[32][64], key_register[80];
+    unsigned char round_key[32][8], key_register[10];
 
     // Generate the round keys and store them in the key register
-    memcpy(key_register, key, 80);
+    memcpy(key_register, key, 10);
     for (int i = 0; i < 32; ++i) {
         generate_round_key(key_register, i);
-        memcpy(round_key[i], key_register, 64);
+        memcpy(round_key[i], key_register, 8);
     }
 
     // Encrypt the state
@@ -117,13 +117,13 @@ void encryption(unsigned char * state, unsigned char * key) {
 // Decrypt a 64-bit block using an 80-bit key for 31 rounds by adding the key,
 // permuting the state, then substituting the state.
 void decryption(unsigned char * state, unsigned char * key) {
-    unsigned char round_key[32][64], key_register[80];
+    unsigned char round_key[32][8], key_register[10];
 
     // Generate the round keys and store them in the key register
-    memcpy(key_register, key, 80);
+    memcpy(key_register, key, 10);
     for (int i = 0; i < 32; ++i) {
         generate_round_key(key_register, i);
-        memcpy(round_key[i], key_register, 64);
+        memcpy(round_key[i], key_register, 8);
     }
 
     // Decrypt the state
@@ -167,6 +167,16 @@ void bin_to_str(unsigned char *str, char *bin, int len) {
 char* hex_to_bin(char hex) {
     long unsigned int i = strtoul(&hex, NULL, 16);
     return hex_binary[i];
+}
+
+// Convert a hexedecimal string to the corresponding char array
+void hex_to_ascii(char *hex, unsigned char *ascii) {
+    for (int i = 0; i < strlen(hex)+1; ++i) {
+        char tmp[2];
+        tmp[0] = hex[2*i];
+        tmp[1] = hex[2*i+1];
+        ascii[i] = (unsigned char)(strtoul(tmp, NULL, 16));
+    }
 }
 
 // Code for reverse and rotate taken from Stack overflow at https://stackoverflow.com/questions/22078728/rotate-array-left-or-right-by-a-set-number-of-positions-in-on-complexity
