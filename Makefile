@@ -21,7 +21,7 @@ test_present.o: test_present.c present.h
 	$(CC) -c $< -o $@ -lbsd
 
 clean:
-	rm -f *.o *.a core
+	rm -f *.o *.a core cipher test_present
 
 test: present.a present.o test_present
 	./test_present
