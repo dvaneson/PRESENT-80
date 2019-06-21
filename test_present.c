@@ -170,6 +170,59 @@ void test_hex_to_bin(char hex, char *target) {
 
 int main(int argc, char * argv[])
 {
+    char str[4];
+    char bin[25], hex[5];
+
+    /* Testing utility Functions */
+    printf("\n\n----------------Testing str_to_bin---------------------\n");
+    strlcpy(str, "A", 2);
+    strlcpy(bin, "01000001", 9);
+    test_str_to_bin(str, bin);
+
+    printf("\n");
+    strlcpy(str, "CBA", 4);
+    strlcpy(bin, "010000110100001001000001 ", 25);
+    test_str_to_bin(str, bin);
+
+    printf("\n");
+    strlcpy(str, "ABC", 4);
+    strlcpy(bin, "010000010100001001000011", 25);
+    test_str_to_bin(str, bin);
+
+    printf("\n\n----------------Testing bin_to_str---------------------\n");
+    strlcpy(str, "A", 2);
+    strlcpy(bin, "01000001", 9);
+    test_bin_to_str(bin, str);
+
+    printf("\n");
+    strlcpy(str, "CBA", 4);
+    strlcpy(bin, "010000110100001001000001 ", 25);
+    test_bin_to_str(bin, str);
+
+    printf("\n");
+    strlcpy(str, "ABC", 4);
+    strlcpy(bin, "010000010100001001000011", 25);
+    test_bin_to_str(bin, str);
+
+    printf("\n\n----------------Testing hex_to_bin---------------------\n");
+    strlcpy(bin, "0000", 5);
+    test_hex_to_bin('0', bin);
+
+    printf("\n");
+    strlcpy(bin, "1001", 5);
+    test_hex_to_bin('9', bin);
+
+    printf("\n");
+    strlcpy(bin, "1010", 5);
+    test_hex_to_bin('A', bin);
+
+    printf("\n");
+    strlcpy(bin, "1111", 5);
+    test_hex_to_bin('F', bin);
+
+
+    /* Testing functions directly related to encryption/decryption */
+
     unsigned char state[8], key[8], target[8];
 
     printf("\n----------------Testing add_round_key----------------\n");
@@ -281,55 +334,6 @@ int main(int argc, char * argv[])
     memcpy(rKey, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10);
     memcpy(target, "\x33\x33\xDC\xD3\x21\x32\x10\xD2", 8);
     test_cipher(state, rKey, target);
-
-    char str[4];
-    char bin[25], hex[5];
-
-    printf("\n\n----------------Testing str_to_bin---------------------\n");
-    strlcpy(str, "A", 2);
-    strlcpy(bin, "01000001", 9);
-    test_str_to_bin(str, bin);
-
-    printf("\n");
-    strlcpy(str, "CBA", 4);
-    strlcpy(bin, "010000110100001001000001 ", 25);
-    test_str_to_bin(str, bin);
-
-    printf("\n");
-    strlcpy(str, "ABC", 4);
-    strlcpy(bin, "010000010100001001000011", 25);
-    test_str_to_bin(str, bin);
-
-    printf("\n\n----------------Testing bin_to_str---------------------\n");
-    strlcpy(str, "A", 2);
-    strlcpy(bin, "01000001", 9);
-    test_bin_to_str(bin, str);
-
-    printf("\n");
-    strlcpy(str, "CBA", 4);
-    strlcpy(bin, "010000110100001001000001 ", 25);
-    test_bin_to_str(bin, str);
-
-    printf("\n");
-    strlcpy(str, "ABC", 4);
-    strlcpy(bin, "010000010100001001000011", 25);
-    test_bin_to_str(bin, str);
-
-    printf("\n\n----------------Testing hex_to_bin---------------------\n");
-    strlcpy(bin, "0000", 5);
-    test_hex_to_bin('0', bin);
-
-    printf("\n");
-    strlcpy(bin, "1001", 5);
-    test_hex_to_bin('9', bin);
-
-    printf("\n");
-    strlcpy(bin, "1010", 5);
-    test_hex_to_bin('A', bin);
-
-    printf("\n");
-    strlcpy(bin, "1111", 5);
-    test_hex_to_bin('F', bin);
 
     printf("\n");
     return 0;
