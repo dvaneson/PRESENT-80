@@ -142,30 +142,28 @@ void decryption(unsigned char * state, unsigned char * key) {
 
 // Convert unsigned char array 'str' to a binary string and store it in 'bin'.
 // Must specify length of str.
+// Does not append NULL at end of the string
 void str_to_bin(unsigned char *str, char *bin, int len) {
     for (int i = 0; i < len; ++i) {
         for (int j = 0; j < 8; ++j) {
             bin[i*8 + j] = (str[i] & (1 << (7-j))) ? '1' : '0';
         }
     }
-
-    bin[len*BLOCK_LENGTH] = '\0';
 }
 
 // Convert binary string 'bin' to the corresponding ASCII and store it in 'str'
 // Must specify length of str.
+// Does not append NULL at end of the binary string
 void bin_to_str(unsigned char *str, char *bin, int len) {
     char tmp[BLOCK_LENGTH+1];
     for (int i = 0; i < len; ++i) {
         strncpy(tmp, &bin[i*BLOCK_LENGTH], BLOCK_LENGTH);
         str[i] = (unsigned char)(strtoul(tmp, NULL, 2));
     }
-
-    str[len] = '\0';
 }
 
 // Convert a hexadecimal character to a binary string
-// Does not append NULL at end so function can be used at any point in a string
+// Does not append NULL at end of the binary string
 void hex_to_bin(char hex, char *bin) {
     unsigned int i = strtoul(&hex, NULL, 16);
     strncpy(bin, hex_binary[i], 4);
@@ -180,8 +178,6 @@ void hex_to_ascii(char *hex, unsigned char *ascii) {
         tmp[1] = hex[2*i+1];
         ascii[i] = (unsigned char)(strtoul(tmp, NULL, 16));
     }
-
-    ascii[len/2] = '\0';
 }
 
 // Code for reverse and rotate taken from Stack overflow at https://stackoverflow.com/questions/22078728/rotate-array-left-or-right-by-a-set-number-of-positions-in-on-complexity
