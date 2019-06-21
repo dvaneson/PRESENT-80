@@ -6,19 +6,19 @@ present.a: present.o
 	ar rcs $@ $^
 
 present.o: present.c  present.h
-	$(CC) -c -o $@ $< -lm
+	$(CC) -c -o $@ $<
 
 cipher: cipher.o present.h present.a
-	$(CC) $^ -o $@ -lm
+	$(CC) $^ -o $@
 
 cipher.o: cipher.c present.h
-	$(CC) -c $< -o $@ -lm
+	$(CC) -c $< -o $@
 
 test_present: test_present.o present.h present.a
-	$(CC) $^ -o $@ -lm
+	$(CC) $^ -o $@ -lbsd
 
 test_present.o: test_present.c present.h
-	$(CC) -c $< -o $@ -lm
+	$(CC) -c $< -o $@ -lbsd
 
 clean:
 	rm -f *.o *.a core

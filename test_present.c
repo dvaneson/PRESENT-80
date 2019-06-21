@@ -5,6 +5,7 @@
     test_present.c - Code to test functions for ECC
 */
 
+#include <bsd/string.h>
 #include "present.h"
 
 void print_hex(unsigned char * str) {
@@ -76,11 +77,41 @@ void test_cipher(unsigned char *state, unsigned char *key, unsigned char *target
 
     encryption(state, key);
     printf("\n\t%-9s| ", "Encrypt");
-    print_hex(target);
+    print_hex(state);
 
     decryption(state, key);
     printf("\n\t%-9s| ", "Decrypt");
     print_hex(state);
+}
+
+void test_str_to_bin(unsigned char *str, unsigned char *target) {
+    char bin[25];
+    int len = strlen(str);
+
+    printf("\n\t%-9s| %s", "Input", str);
+    printf("\n\t%-9s| %s", "Expected", target);
+    str_to_bin(str, bin, len);
+    printf("\n\t%-9s| %s", "Actual", bin);
+}
+
+void test_bin_to_str(unsigned char *bin, unsigned char *target) {
+    char str[4];
+    int len = strlen(bin) / BLOCK_LENGTH;
+
+    printf("\n\t%-9s| %s", "Input", bin);
+    printf("\n\t%-9s| %s", "Expected", target);
+    bin_to_str(str, bin, len);
+    printf("\n\t%-9s| %s", "Actual", str);
+}
+
+void test_hex_to_bin(char hex, char *target) {
+    char bin[5];
+
+    printf("\n\t%-9s| %c", "Input", hex);
+    printf("\n\t%-9s| %s", "Expected", target);
+    hex_to_bin(hex, bin);
+    bin[4] = '\0';
+    printf("\n\t%-9s| %s", "Actual", bin);
 }
 
 
@@ -198,20 +229,56 @@ int main(int argc, char * argv[])
     memcpy(rKey, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10);
     memcpy(target, "\x33\x33\xDC\xD3\x21\x32\x10\xD2", 8);
     test_cipher(state, rKey, target);
+    printf("\n");
 
-    // printf("\n\n----------------Testing str_to_bin---------------------\n\n");
-    // unsigned char test[] = "ABC";
-    // char binary[24];
-    // str_to_bin(test, binary, 3);
-    // printf("ABC    -> %s\n", binary);
-    // printf("Expected: 010000010100001001000011\n");
+    char str[4];
+    char bin[25], hex[5];
 
-    // printf("\n\n----------------Testing bin_to_str---------------------\n\n");
-    // bin_to_str(test, "010000110100001001000001", 3);
-    // printf("010000110100001001000001 -> %s\n", test);
-    // printf("Expected: CBA\n");
+    printf("\n\n----------------Testing str_to_bin---------------------\n\n");
+    strlcpy(str, "A", 2);
+    strlcpy(bin, "01000001", 9);
+    test_str_to_bin(str, bin);
 
-    // printf("\n\n----------------Testing hex_to_bin---------------------\n\n");
+    printf("\n");
+    strlcpy(str, "CBA", 4);
+    strlcpy(bin, "010000110100001001000001 ", 25);
+    test_str_to_bin(str, bin);
+
+    printf("\n");
+    strlcpy(str, "ABC", 4);
+    strlcpy(bin, "010000010100001001000011", 25);
+    test_str_to_bin(str, bin);
+
+    printf("\n\n----------------Testing bin_to_str---------------------\n\n");
+    strlcpy(str, "A", 2);
+    strlcpy(bin, "01000001", 9);
+    test_bin_to_str(bin, str);
+
+    printf("\n");
+    strlcpy(str, "CBA", 4);
+    strlcpy(bin, "010000110100001001000001 ", 25);
+    test_bin_to_str(bin, str);
+
+    printf("\n");
+    strlcpy(str, "ABC", 4);
+    strlcpy(bin, "010000010100001001000011", 25);
+    test_bin_to_str(bin, str);
+
+    printf("\n\n----------------Testing hex_to_bin---------------------\n\n");
+    strlcpy(bin, "0000", 5);
+    test_hex_to_bin('0', bin);
+
+    printf("\n");
+    strlcpy(bin, "1001", 5);
+    test_hex_to_bin('9', bin);
+
+    printf("\n");
+    strlcpy(bin, "1010", 5);
+    test_hex_to_bin('A', bin);
+
+    printf("\n");
+    strlcpy(bin, "1111", 5);
+    test_hex_to_bin('F', bin);
     // printf("%s\n", hex_to_bin('A'));
 
     return 0;

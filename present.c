@@ -81,7 +81,7 @@ void generate_round_key(unsigned char * key, int counter) {
     strncpy(tmp, bin, 4);
     tmp[4] = '\0';
     s = strtoul(tmp, NULL, 2);
-    strncpy(bin, hex_to_bin(s_box[s]), 4);
+    hex_to_bin(s_box[s], bin);
 
     // Xor bits 60 to 64 with the counter
     for (int i = 0; i < 5; ++i) {
@@ -160,23 +160,28 @@ void bin_to_str(unsigned char *str, char *bin, int len) {
         strncpy(tmp, &bin[i*BLOCK_LENGTH], BLOCK_LENGTH);
         str[i] = (unsigned char)(strtoul(tmp, NULL, 2));
     }
+
+    str[len] = '\0';
 }
 
-// Convert a hexadecimal character to a binary string string using the
-// hex_binary array
-char* hex_to_bin(char hex) {
-    long unsigned int i = strtoul(&hex, NULL, 16);
-    return hex_binary[i];
+// Convert a hexadecimal character to a binary string
+// Does not append NULL at end so function can be used at any point in a string
+void hex_to_bin(char hex, char *bin) {
+    unsigned int i = strtoul(&hex, NULL, 16);
+    strncpy(bin, hex_binary[i], 4);
 }
 
 // Convert a hexedecimal string to the corresponding char array
 void hex_to_ascii(char *hex, unsigned char *ascii) {
-    for (int i = 0; i < strlen(hex)+1; ++i) {
+    int len = strlen(hex);
+    for (int i = 0; i < len+1; ++i) {
         char tmp[2];
         tmp[0] = hex[2*i];
         tmp[1] = hex[2*i+1];
         ascii[i] = (unsigned char)(strtoul(tmp, NULL, 16));
     }
+
+    ascii[len/2] = '\0';
 }
 
 // Code for reverse and rotate taken from Stack overflow at https://stackoverflow.com/questions/22078728/rotate-array-left-or-right-by-a-set-number-of-positions-in-on-complexity

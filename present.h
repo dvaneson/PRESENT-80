@@ -38,7 +38,7 @@ void str_to_bin(unsigned char *, char *, int);
 void bin_to_str(unsigned char *, char *, int);
 
 // Convert a hexedecimal number to binary
-char* hex_to_bin(char);
+void hex_to_bin(char, char *);
 
 // Convert a hexedecimal string to the corresponding char array
 void hex_to_ascii(char *, unsigned char *);
