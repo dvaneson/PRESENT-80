@@ -1,8 +1,8 @@
 /*
-    Donovan Ellison
-    11-29-2018
-
-    present.h - Header for PRESENT-80 functions
+ *  Donovan Ellison
+ *  11-29-2018
+ *
+ *  present.h - Header for PRESENT-80 functions
  */
 
 #include <stdio.h>
@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 // Length of the input block for the cipher
-#define BLOCK_LENGTH 8
+#define BLOCK_LENGTH    8
 
 // XOR the round key with the state
 void add_round_key(unsigned char *, unsigned char *);
