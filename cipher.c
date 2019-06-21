@@ -52,8 +52,8 @@ void encrypt() {
     int i;
 
     // Read the plaintext and key and print it
-    read_file("plaintext.txt", plaintext);
-    read_file("key.txt", hex_key);
+    read_file("input/plaintext.txt", plaintext);
+    read_file("input/key.txt", hex_key);
     printf("Plaintext: %s", plaintext);
     printf("Key: %s", hex_key);
 
@@ -78,7 +78,7 @@ void encrypt() {
         memcpy(ciphertext+i, temp, 8);
     }
     printf("Ciphertext: %s\n", ciphertext);
-    write_file("ciphertext.txt", ciphertext);
+    write_file("input/ciphertext.txt", ciphertext);
 }
 
 // Function to read ciphertext and a key from local files, decrypt it, and
@@ -89,8 +89,8 @@ void decrypt() {
     int i;
 
     // Read the ciphertext and key
-    read_file("ciphertext.txt", ciphertext);
-    read_file("key.txt", hex_key);
+    read_file("input/ciphertext.txt", ciphertext);
+    read_file("input/key.txt", hex_key);
     printf("Ciphertext: %s\n", ciphertext);
     printf("Key: %s", hex_key);
 
@@ -103,7 +103,7 @@ void decrypt() {
         memcpy(plaintext+i, temp, 8);
     }
     printf("Plaintext: %s", plaintext);
-    write_file("plaintext.txt", plaintext);
+    write_file("input/plaintext.txt", plaintext);
 
 }
 
