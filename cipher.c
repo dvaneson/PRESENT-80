@@ -77,7 +77,7 @@ void encrypt() {
         encryption(temp, key);
         memcpy(ciphertext+i, temp, 8);
     }
-    printf("Ciphertext: %s", ciphertext);
+    printf("Ciphertext: %s\n", ciphertext);
     write_file("ciphertext.txt", ciphertext);
 }
 
