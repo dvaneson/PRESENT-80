@@ -19,99 +19,151 @@ void print_10_hex(unsigned char * str) {
 }
 
 void test_add_round_key(unsigned char *state, unsigned char *key, unsigned char *target) {
-    printf("\n\t%-9s| ", "State");
-    print_hex(state);
-    printf("\n\t%-9s| ", "Key");
-    print_hex(key);
-    add_round_key(state, key);
+    unsigned char actual[8];
+    memcpy(actual, state, 8);
 
-    printf("\n\t%-9s| ", "Expected");
-    print_hex(target);
-    printf("\n\t%-9s| ", "Actual");
-    print_hex(state);
+    add_round_key(actual, key);
+    if (memcmp(actual, target, 8) != 0) {
+      printf("\n\t%-9s| ", "State");
+      print_hex(state);
+      printf("\n\t%-9s| ", "Key");
+      print_hex(key);
+
+      printf("\n\t%-9s| ", "Expected");
+      print_hex(target);
+      printf("\n\t%-9s| ", "Actual");
+      print_hex(actual);
+  } else {
+      printf("\n\tPASSED");
+  }
 }
 
 void test_s_box_layer(unsigned char *state, unsigned char *target, bool inverse) {
-    printf("\n\t[%s]", inverse ? "Inverse" : "Regular");
-    printf("\n\t%-9s| ", "State");
-    print_hex(state);
-    s_box_layer(state, inverse);
+    unsigned char actual[8];
+    memcpy(actual, state, 8);
 
-    printf("\n\t%-9s| ", "Expected");
-    print_hex(target);
-    printf("\n\t%-9s| ", "Actual");
-    print_hex(state);
+    s_box_layer(actual, inverse);
+    if (memcmp(actual, target, 8) != 0) {
+      printf("\n\t[%s]", inverse ? "Inverse" : "Regular");
+      printf("\n\t%-9s| ", "State");
+      print_hex(state);
+
+      printf("\n\t%-9s| ", "Expected");
+      print_hex(target);
+      printf("\n\t%-9s| ", "Actual");
+      print_hex(actual);
+  } else {
+    printf("\n\tPASSED");
+  }
 }
 
 void test_p_layer(unsigned char *state, unsigned char *target, bool inverse) {
-    printf("\n\t[%s]", inverse ? "Inverse" : "Regular");
-    printf("\n\t%-9s| ", "State");
-    print_hex(state);
-    p_layer(state, inverse);
+    unsigned char actual[8];
+    memcpy(actual, state, 8);
 
-    printf("\n\t%-9s| ", "Expected");
-    print_hex(target);
-    printf("\n\t%-9s| ", "Actual");
-    print_hex(state);
+    p_layer(actual, inverse);
+    if (memcmp(actual, target, 8) != 0) {
+      printf("\n\t[%s]", inverse ? "Inverse" : "Regular");
+      printf("\n\t%-9s| ", "State");
+      print_hex(state);
+
+      printf("\n\t%-9s| ", "Expected");
+      print_hex(target);
+      printf("\n\t%-9s| ", "Actual");
+      print_hex(actual);
+    } else {
+      printf("\n\tPASSED");
+    }
 }
 
 void test_generate_round_key(unsigned char *key, unsigned char *target, int counter) {
-    printf("\n\t[Round %d]", counter);
-    printf("\n\t%-9s| ", "Key");
-    print_10_hex(key);
-    generate_round_key(key, counter);
+    unsigned char actual[10];
+    memcpy(actual, key, 10);
 
-    printf("\n\t%-9s| ", "Expected");
-    print_10_hex(target);
-    printf("\n\t%-9s| ", "Actual");
-    print_10_hex(key);
+    generate_round_key(actual, counter);
+    if (memcmp(actual, target, 10) != 0) {
+      printf("\n\t[Round %d]", counter);
+      printf("\n\t%-9s| ", "Key");
+      print_10_hex(key);
+
+      printf("\n\t%-9s| ", "Expected");
+      print_10_hex(target);
+      printf("\n\t%-9s| ", "Actual");
+      print_10_hex(actual);
+    } else {
+      printf("\n\tPASSED");
+    }
 }
 
 void test_cipher(unsigned char *state, unsigned char *key, unsigned char *target) {
-    printf("\n\t%-9s| ", "State");
-    print_hex(state);
-    printf("\n\t%-9s| ", "Key");
-    print_10_hex(key);
-    printf("\n\t%-9s| ", "Expected");
-    print_hex(target);
+    unsigned char encrypted[8], decrypted[8];
 
-    encryption(state, key);
-    printf("\n\t%-9s| ", "Encrypt");
-    print_hex(state);
+    memcpy(encrypted, state, 8);
+    encryption(encrypted, key);
 
-    decryption(state, key);
-    printf("\n\t%-9s| ", "Decrypt");
-    print_hex(state);
+    memcpy(decrypted, encrypted, 8);
+    decryption(decrypted, key);
+
+    if (memcmp(encrypted, target, 8) != 0 || memcmp(decrypted, state, 8) != 0) {
+      printf("\n\t%-9s| ", "State");
+      print_hex(state);
+      printf("\n\t%-9s| ", "Key");
+      print_10_hex(key);
+      printf("\n\t%-9s| ", "Expected");
+      print_hex(target);
+
+      printf("\n\t%-9s| ", "Encrypted");
+      print_hex(encrypted);
+
+      printf("\n\t%-9s| ", "Decrypted");
+      print_hex(decrypted);
+    } else {
+      printf("\n\tPASSED");
+    }
 }
 
 void test_str_to_bin(unsigned char *str, unsigned char *target) {
     char bin[25];
     int len = strlen(str);
 
-    printf("\n\t%-9s| %s", "Input", str);
-    printf("\n\t%-9s| %s", "Expected", target);
     str_to_bin(str, bin, len);
-    printf("\n\t%-9s| %s", "Actual", bin);
+    bin[len*BLOCK_LENGTH] = '\0';
+    if (strcmp(bin, target) != 0) {
+      printf("\n\t%-9s| %s", "Input", str);
+      printf("\n\t%-9s| %s", "Expected", target);
+      printf("\n\t%-9s| %s", "Actual", bin);
+    } else {
+      printf("\n\tPASSED");
+    }
 }
 
 void test_bin_to_str(unsigned char *bin, unsigned char *target) {
     char str[4];
     int len = strlen(bin) / BLOCK_LENGTH;
 
-    printf("\n\t%-9s| %s", "Input", bin);
-    printf("\n\t%-9s| %s", "Expected", target);
     bin_to_str(str, bin, len);
-    printf("\n\t%-9s| %s", "Actual", str);
+    str[len] = '\0';
+    if (strcmp(str, target) != 0) {
+      printf("\n\t%-9s| %s", "Input", bin);
+      printf("\n\t%-9s| %s", "Expected", target);
+      printf("\n\t%-9s| %s", "Actual", str);
+    } else {
+      printf("\n\tPASSED");
+    }
 }
 
 void test_hex_to_bin(char hex, char *target) {
     char bin[5];
 
-    printf("\n\t%-9s| %c", "Input", hex);
-    printf("\n\t%-9s| %s", "Expected", target);
     hex_to_bin(hex, bin);
     bin[4] = '\0';
-    printf("\n\t%-9s| %s", "Actual", bin);
+    if (strcmp(bin, target)) {
+      printf("\n\t%-9s| %c", "Input", hex);
+      printf("\n\t%-9s| %s", "Expected", target);
+      printf("\n\t%-9s| %s", "Actual", bin);
+    } else {
+      printf("\n\tPASSED");
+    }
 }
 
 
@@ -229,12 +281,11 @@ int main(int argc, char * argv[])
     memcpy(rKey, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10);
     memcpy(target, "\x33\x33\xDC\xD3\x21\x32\x10\xD2", 8);
     test_cipher(state, rKey, target);
-    printf("\n");
 
     char str[4];
     char bin[25], hex[5];
 
-    printf("\n\n----------------Testing str_to_bin---------------------\n\n");
+    printf("\n\n----------------Testing str_to_bin---------------------\n");
     strlcpy(str, "A", 2);
     strlcpy(bin, "01000001", 9);
     test_str_to_bin(str, bin);
@@ -249,7 +300,7 @@ int main(int argc, char * argv[])
     strlcpy(bin, "010000010100001001000011", 25);
     test_str_to_bin(str, bin);
 
-    printf("\n\n----------------Testing bin_to_str---------------------\n\n");
+    printf("\n\n----------------Testing bin_to_str---------------------\n");
     strlcpy(str, "A", 2);
     strlcpy(bin, "01000001", 9);
     test_bin_to_str(bin, str);
@@ -264,7 +315,7 @@ int main(int argc, char * argv[])
     strlcpy(bin, "010000010100001001000011", 25);
     test_bin_to_str(bin, str);
 
-    printf("\n\n----------------Testing hex_to_bin---------------------\n\n");
+    printf("\n\n----------------Testing hex_to_bin---------------------\n");
     strlcpy(bin, "0000", 5);
     test_hex_to_bin('0', bin);
 
@@ -279,7 +330,7 @@ int main(int argc, char * argv[])
     printf("\n");
     strlcpy(bin, "1111", 5);
     test_hex_to_bin('F', bin);
-    // printf("%s\n", hex_to_bin('A'));
 
+    printf("\n");
     return 0;
 }
