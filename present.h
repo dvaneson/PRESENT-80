@@ -41,7 +41,7 @@ void bin_to_str(unsigned char *, char *, int);
 void hex_to_bin(char, char *);
 
 // Convert a hexedecimal string to the corresponding char array
-void hex_to_ascii(char *, unsigned char *);
+void hex_to_ascii(const char *, unsigned char *);
 
 // Reverse a char array of a given length
 void reverse(char *, int);

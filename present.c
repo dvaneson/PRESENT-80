@@ -172,11 +172,12 @@ void hex_to_bin(char hex, char *bin) {
 }
 
 // Convert a hexedecimal string to the corresponding char array
-void hex_to_ascii(char *hex, unsigned char *ascii) {
-   int len = strlen(hex);
+void hex_to_ascii(const char *hex, unsigned char *ascii) {
+   int len = strlen(hex) / 2;
+   char tmp[3];
+   tmp[2] = '\0';
 
-   for (int i = 0; i < len + 1; ++i) {
-      char tmp[2];
+   for (int i = 0; i < len; ++i) {
       tmp[0]   = hex[2 * i];
       tmp[1]   = hex[2 * i + 1];
       ascii[i] = (unsigned char)(strtoul(tmp, NULL, 16));

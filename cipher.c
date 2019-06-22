@@ -6,6 +6,7 @@
  */
 
 #include "present.h"
+#include "block_cipher.h"
 
 // Function to read the specified file and store it in output.
 void read_file(char *filename, char *output) {
@@ -47,38 +48,24 @@ void write_file(char *filename, char *input) {
 // Function to read plaintext and a key from local files, encrypt it, and
 // store the result in ciphertext.txt
 void encrypt() {
-		char plaintext[200], ciphertext[200], hex_key[21];
-		unsigned char temp[9], key[11];
-		int i;
+		char plaintext[200], hex_key[21];
+		unsigned char *ciphertext = NULL;
+		// unsigned char temp[9], key[11];
+		int i, len;
 
 		// Read the plaintext and key and print it
 		read_file("input/plaintext.txt", plaintext);
 		read_file("input/key.txt", hex_key);
+		hex_key[20] = '\0';
+
 		printf("Plaintext: %s", plaintext);
-		printf("Key: %s", hex_key);
+		printf("Key: %s\n", hex_key);
 
-		hex_to_ascii(hex_key, key);
-		int len = strlen(plaintext);
+		encrypt_ecb(plaintext, hex_key, &ciphertext);
 
-		// If the plaintext is not in 64-bit blocks, pad with 0 bits
-		if (len % 8 != 0) {
-				int rem = len % 8;
-				for (i = 0; i < rem; ++i)
-						plaintext[len+i] = '\x00';
-				plaintext[len+rem] = '\0';
-				len = strlen(plaintext);
-		}
-		else
-				ciphertext[len] = '\0';
-
-		// Encrypt 64-bits at a time and store it in ciphertext.txt
-		for (i = 0; i < len; i += 8) {
-				memcpy(temp, plaintext+i, 8);
-				encryption(temp, key);
-				memcpy(ciphertext+i, temp, 8);
-		}
 		printf("Ciphertext: %s\n", ciphertext);
 		write_file("input/ciphertext.txt", ciphertext);
+		free(ciphertext);
 }
 
 // Function to read ciphertext and a key from local files, decrypt it, and
