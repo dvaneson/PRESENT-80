@@ -27,6 +27,7 @@ void add_round_key(unsigned char *state, unsigned char *key) {
 void s_box_layer(unsigned char *state, bool inverse) {
    char hex[3], tmp[2];
    long unsigned int s;
+
    hex[2] = '\0';
    tmp[1] = '\0';
 
@@ -35,12 +36,12 @@ void s_box_layer(unsigned char *state, bool inverse) {
       sprintf(hex, "%02X", state[i]);
 
       // Take the hex numbers and put them through the s_box
-      tmp    = hex[0];
-      s      = strtoul(&tmp, NULL, 16);
+      tmp[0] = hex[0];
+      s      = strtoul(tmp, NULL, 16);
       hex[0] = inverse ? inv_s_box[s] : s_box[s];
 
-      tmp    = hex[1];
-      s      = strtoul(&tmp, NULL, 16);
+      tmp[0] = hex[1];
+      s      = strtoul(tmp, NULL, 16);
       hex[1] = inverse ? inv_s_box[s] : s_box[s];
 
       // Convert the new hex number back to char and update state
@@ -175,8 +176,9 @@ void hex_to_bin(char hex, char *bin) {
 
 // Convert a hexedecimal string to the corresponding char array
 void hex_to_ascii(const char *hex, unsigned char *ascii) {
-   int len = strlen(hex) / 2;
+   int  len = strlen(hex) / 2;
    char tmp[3];
+
    tmp[2] = '\0';
 
    for (int i = 0; i < len; ++i) {
