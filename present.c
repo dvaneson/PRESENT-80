@@ -25,8 +25,10 @@ void add_round_key(unsigned char *state, unsigned char *key) {
 // Substitute each 4-bit word in the given state according to s_box
 // Uses the inverse s_box if inverse is specified
 void s_box_layer(unsigned char *state, bool inverse) {
-   char hex[3], tmp;
+   char hex[3], tmp[2];
    long unsigned int s;
+   hex[2] = '\0';
+   tmp[1] = '\0';
 
    for (int i = 0; i < BLOCK_LENGTH; ++i) {
       // Store the Hex value of the char in temp
