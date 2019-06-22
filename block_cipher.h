@@ -5,7 +5,10 @@
     block_cipher.h - Header for block cipher modes of operation
  */
 
- #include "present.h"
+#include "present.h"
 
-void encrypt_ecb(const char *, const char *, unsigned char **);
-char* decrypt_ecb(char *, char *);
+// Encrypt using ECB mod eof operation
+bool encrypt_ecb(const char *, int, const char *, unsigned char **);
+
+// Decrypt using ECB mod eof operation
+bool decrypt_ecb(const char *, int, const char *, unsigned char **);

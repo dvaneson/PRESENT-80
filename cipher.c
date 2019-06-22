@@ -5,18 +5,18 @@
     cipher.c - Code to encrypt and decrypt a string
  */
 
-#include "present.h"
 #include "block_cipher.h"
 
 // Function to read the specified file and store it in output.
-void read_file(char *filename, char *output) {
+// Return the length of the string
+int read_file(char *filename, char *output) {
 		FILE *fptr = fopen(filename, "r");
 		char ch;
 
 		if (fptr == NULL)
 		{
 				printf("File does not exists \n");
-				return;
+				return 0;
 		}
 
 		ch = fgetc(fptr);
@@ -29,6 +29,7 @@ void read_file(char *filename, char *output) {
 		output[i] = '\0';
 
 		fclose(fptr);
+		return i;
 }
 
 // Function to write the input string to a file
@@ -50,47 +51,59 @@ void write_file(char *filename, char *input) {
 void encrypt() {
 		char plaintext[200], hex_key[21];
 		unsigned char *ciphertext = NULL;
-		// unsigned char temp[9], key[11];
-		int i, len;
+		int len;
 
 		// Read the plaintext and key and print it
-		read_file("input/plaintext.txt", plaintext);
+		len = read_file("input/plaintext.txt", plaintext);
 		read_file("input/key.txt", hex_key);
 		hex_key[20] = '\0';
 
 		printf("Plaintext: %s", plaintext);
 		printf("Key: %s\n", hex_key);
 
-		encrypt_ecb(plaintext, hex_key, &ciphertext);
-
-		printf("Ciphertext: %s\n", ciphertext);
-		write_file("input/ciphertext.txt", ciphertext);
-		free(ciphertext);
+		if (encrypt_ecb(plaintext, len, hex_key, &ciphertext)) {
+			printf("Ciphertext: %s\n", ciphertext);
+			write_file("input/ciphertext.txt", ciphertext);
+			free(ciphertext);
+		} else {
+			printf("Failed to encrypt\n");
+			if (ciphertext) {
+				free(ciphertext);
+			}
+		}
 }
 
 // Function to read ciphertext and a key from local files, decrypt it, and
 // store the result in plaintext.txt
 void decrypt() {
-		char ciphertext[200], plaintext[200], hex_key[21];
-		unsigned char temp[8], key[10];
-		int i;
+		char ciphertext[200], hex_key[21];
+		unsigned char *plaintext = NULL;
+		int len;
 
 		// Read the ciphertext and key
-		read_file("input/ciphertext.txt", ciphertext);
+		len = read_file("input/ciphertext.txt", ciphertext);
 		read_file("input/key.txt", hex_key);
+		hex_key[20] = '\0';
 		printf("Ciphertext: %s\n", ciphertext);
-		printf("Key: %s", hex_key);
+		printf("Key: %s\n", hex_key);
 
 		// Decrypt the ciphertext in 64 bit blocks and store it in plaintext.txt
-		hex_to_ascii(hex_key, key);
-		int len = strlen(ciphertext);
-		for (i = 0; i < len; i += 8) {
-				memcpy(temp, ciphertext+i, 8);
-				decryption(temp, key);
-				memcpy(plaintext+i, temp, 8);
+		if (decrypt_ecb(ciphertext, len, hex_key, &plaintext)) {
+			printf("Plaintext: %s", plaintext);
+			write_file("input/plaintext.txt", plaintext);
+		} else {
+			printf("Failed to decrypt\n");
+			if (plaintext) {
+				free(plaintext);
+			}
 		}
-		printf("Plaintext: %s", plaintext);
-		write_file("input/plaintext.txt", plaintext);
+		// hex_to_ascii(hex_key, key);
+		// int len = strlen(ciphertext);
+		// for (i = 0; i < len; i += 8) {
+		// 		memcpy(temp, ciphertext+i, 8);
+		// 		decryption(temp, key);
+		// 		memcpy(plaintext+i, temp, 8);
+		// }
 
 }
 

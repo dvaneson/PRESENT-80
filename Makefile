@@ -8,13 +8,13 @@ present.a: present.o
 present.o: present.c  present.h
 	$(CC) -c -o $@ $<
 
-block_cipher.a: block_cipher.o
+block_cipher.a: block_cipher.o present.o
 	ar rcs $@ $^
 
 block_cipher.o: block_cipher.c block_cipher.h present.h
 	$(CC) -c $< -o $@
 
-cipher: cipher.o present.a block_cipher.a
+cipher: cipher.o present.h present.a block_cipher.h block_cipher.a
 	$(CC) $^ -o $@
 
 cipher.o: cipher.c present.h block_cipher.h
