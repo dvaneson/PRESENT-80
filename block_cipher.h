@@ -7,8 +7,8 @@
 
 #include "present.h"
 
-// Encrypt using ECB mod eof operation
+// Encrypt using ECB mode of operation
 bool encrypt_ecb(const char *, int, const char *, unsigned char **);
 
-// Decrypt using ECB mod eof operation
+// Decrypt using ECB mode of operation
 bool decrypt_ecb(const char *, int, const char *, unsigned char **);

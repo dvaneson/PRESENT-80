@@ -1,6 +1,6 @@
 /*
     Donovan Ellison
-    11-29-2018
+    06-21-2019
 
     cipher.c - Code to encrypt and decrypt a string
  */
