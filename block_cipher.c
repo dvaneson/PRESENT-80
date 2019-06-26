@@ -20,7 +20,7 @@ bool encrypt_ecb(const char *plaintext, int len, const char *hex_key, unsigned c
       return(false);
    }
 
-   int           rem    = 8 - (len % 8);
+   int           rem    = (len % 8 == 0) ? 0 : 8 - (len % 8);
    int           blocks = (len + rem) / 8;
    unsigned char key[10];
    hex_to_ascii(hex_key, key);
