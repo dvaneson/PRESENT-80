@@ -52,6 +52,10 @@ bool encrypt_ecb(const char *plaintext, int len, const char *hex_key, unsigned c
 // plaintext -> NULL char array that the plaintext will be stored in.
 // Must deallocate plaintext after use
 bool decrypt_ecb(const char *ciphertext, int len, const char *hex_key, unsigned char **plaintext) {
+   // Make sure ciphertext is divisible by 8
+   if (len % 8 != 0) {
+      return(false);
+   }
    // Make sure hexadecimal key is correct length
    if (strlen(hex_key) != 20) {
       return(false);
